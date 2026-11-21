@@ -260,6 +260,18 @@ def cv_text() -> str:
     return strip_tex("\n".join(parts))
 
 
+def german_level() -> str:
+    """Your German level (e.g. 'B1') from \\cvlanguages in personal.tex, or ''."""
+    personal = ROOT / "personal.tex"
+    if personal.exists():
+        m = re.search(r"\\def\\cvlanguages\{(.*)\}", personal.read_text(encoding="utf-8"))
+        if m:
+            lvl = re.search(r"(?:german|deutsch)\W*\(?\s*(A1|A2|B1|B2|C1|C2|native|muttersprach\w*)", m.group(1), re.I)
+            if lvl:
+                return lvl.group(1).upper() if len(lvl.group(1)) == 2 else "native"
+    return ""
+
+
 def find_skills(text: str) -> dict[str, str]:
     """canonical skill -> first surface form found in text"""
     out = {}
@@ -391,10 +403,12 @@ def score(p: Posting, cv: str, cv_skills: dict[str, str]) -> None:
     p.matched = sorted(have, key=lambda k: -weights[k])
     p.missing = sorted((k for k in weights if k not in cv_skills), key=lambda k: -weights[k])
     p.level_fit = level_fit(p.title, p.description)
+    level = german_level()
+    gap = f" (you: {level})" if level in ("A1", "A2", "B1", "B2") else ""
     if GERMAN_REQ.search(jd):
-        p.german = "Required"
+        p.german = "Required" + gap
     elif len(GERMAN_WORDS.findall(p.description)) > 25:
-        p.german = "Likely (ad is in German)"
+        p.german = "Likely (ad is in German)" + gap
     else:
         p.german = "Not stated"
     n = len(weights)
