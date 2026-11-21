@@ -1,0 +1,101 @@
+% ===========================================================================
+% profiles.tex: one profile per job family. A profile sets the defaults for:
+%   \targettitle   headline under your name (ATS title match)
+%   \cvsummary     professional summary
+%   \projectorder  which projects appear, in which order
+%   \skillsblock   which skill rows appear, in which order
+% An application file can override any of these by defining it with \def
+% BEFORE \input{cv-master}. Profiles use \providecommand, so your value wins.
+%
+% Job titles each profile covers (see job-titles-ats-keywords.md):
+%   ml        ML Engineer, ML Software Engineer, MLOps (junior), Deep Learning Engineer
+%   genai     AI Engineer, Generative AI / LLM Engineer, Conversational AI, Search / IR Engineer
+%   nlp       NLP Engineer, Text Analytics, Computational Linguistics (industry)
+%   cv        Computer Vision, Perception / ADAS, Machine Vision / Quality Inspection, Edge AI
+%   ds        Data Scientist, Forecasting Data Scientist, Healthcare Data Scientist
+%   research  Applied Scientist, Research Engineer, HiWi, Master Thesis
+%   quant     Quantitative Researcher / Analyst
+% ===========================================================================
+
+% --- Skill rows (shared building blocks) ------------------------------------
+\newcommand{\skCore}{\skillrow{Programming \& ML}{Python, PyTorch, TensorFlow, Keras, scikit-learn, XGBoost}}
+\newcommand{\skDL}{\skillrow{Deep Learning}{Neural networks, CNNs, LSTM, GRU, Transformers, U-Net, fine-tuning}}
+\newcommand{\skLLM}{\skillrow{NLP \& LLMs}{Hugging Face Transformers, BERT, RoBERTa, LLMs (LLaMA), Sentence Transformers,
+  spaCy, NER, text classification, RAG, FAISS, embeddings, semantic search}}
+\newcommand{\skNLPshort}{\skillrow{NLP \& LLMs}{Hugging Face Transformers, BERT, RoBERTa, LLMs (LLaMA), spaCy, Sentence Transformers, RAG, FAISS}}
+\newcommand{\skCV}{\skillrow{Computer Vision}{CNNs, U-Net, semantic segmentation, lane detection (SCNN, LaneATT, CLRNet),
+  visual inspection, defect detection}}
+\newcommand{\skNLPmin}{\skillrow{NLP}{Hugging Face Transformers, BERT, RoBERTa, spaCy, Sentence Transformers, RAG, FAISS}}
+\newcommand{\skCVshort}{\skillrow{Computer Vision}{CNNs, U-Net, semantic segmentation, defect detection}}
+\newcommand{\skPractice}{\skillrow{ML Practice}{Model evaluation, benchmarking, cross-validation, hyperparameter tuning, SHAP, feature engineering}}
+\newcommand{\skData}{\skillrow{Data Science}{Predictive modeling, classification, time-series forecasting, feature engineering,
+  cross-validation, SHAP}}
+\newcommand{\skDeploy}{\skillrow{Deployment}{Model serving, microservices, REST APIs, inference latency optimization, monitoring dashboards}}
+\newcommand{\skQuant}{\skillrow{Quant \& Time Series}{OHLCV data, technical indicators (RSI, MACD, EMA), backtesting,
+  strategy robustness, time-series forecasting, LSTM, GRU, XGBoost}}
+\newcommand{\skResearch}{\skillrow{Research}{Experimental design, architecture benchmarking, baseline comparison,
+  failure-case analysis, reproducibility}}
+
+% --- Profiles ------------------------------------------------------------------
+\csdef{profile@ml}{%
+  \providecommand{\targettitle}{Machine Learning Engineer}
+  \providecommand{\cvsummary}{Machine learning engineer and MSc Data Science \& AI student at Universität des Saarlandes,
+    with three industry and research roles across NLP, computer vision and time-series ML. Trains, evaluates and
+    deploys models end-to-end with PyTorch, scikit-learn and XGBoost, including FastAPI microservices serving
+    predictions in under 120 ms, with results benchmarked against baselines.}
+  \providecommand{\projectorder}{\projRAG\projLane\projHeart}
+  \providecommand{\skillsblock}{\skCore\skDeploy\skPractice\skNLPshort}}
+
+\csdef{profile@genai}{%
+  \providecommand{\targettitle}{AI Engineer}
+  \providecommand{\cvsummary}{AI engineer and MSc Data Science \& AI student at Universität des Saarlandes, focused on
+    NLP, retrieval-augmented generation (RAG) and semantic search. Built a RAG assistant with FAISS retrieval that beat a keyword
+    baseline by +20 pts at 3.2$\times$ lower latency, fine-tuned BERT and RoBERTa models, and deployed models as
+    FastAPI microservices. Evaluation-driven: retrieval accuracy, rejection of unsupported questions, latency.}
+  \providecommand{\projectorder}{\projRAG\projLane\projHeart}
+  \providecommand{\skillsblock}{\skLLM\skCore\skDeploy\skPractice}}
+
+\csdef{profile@nlp}{%
+  \providecommand{\targettitle}{NLP Engineer}
+  \providecommand{\cvsummary}{NLP engineer and MSc Data Science \& AI student at Universität des Saarlandes. Fine-tuned
+    BERT and RoBERTa for text classification and sentiment analysis (F1 up to +8\%), built an NER pipeline over 50K+
+    documents with spaCy and Hugging Face, and developed semantic similarity and RAG retrieval with Sentence
+    Transformers and FAISS, deployed as FastAPI microservices.}
+  \providecommand{\projectorder}{\projRAG\projHeart\projLane}
+  \providecommand{\skillsblock}{\skLLM\skCore\skPractice\skDeploy}}
+
+\csdef{profile@cv}{%
+  \providecommand{\targettitle}{Computer Vision Engineer}
+  \providecommand{\cvsummary}{Computer vision engineer and MSc Data Science \& AI student at Universität des Saarlandes.
+    Builds real-time segmentation and visual inspection systems: a lane detection benchmark (U-Net at 91.5 FPS,
+    compared against SCNN-, LaneATT- and CLRNet-style models on TuSimple) and a camera-based 3D-print defect
+    monitoring prototype on Raspberry Pi. Experienced with PyTorch, model evaluation and FastAPI deployment.}
+  \providecommand{\projectorder}{\projLane\projRAG\projHeart}
+  \providecommand{\skillsblock}{\skCV\skCore\skDeploy\skNLPmin}}
+
+\csdef{profile@ds}{%
+  \providecommand{\targettitle}{Data Scientist}
+  \providecommand{\cvsummary}{Data scientist and MSc Data Science \& AI student at Universität des Saarlandes. Builds
+    evaluation-driven predictive models: XGBoost with stratified cross-validation, threshold calibration and SHAP
+    (0.90 ROC-AUC), LSTM/GRU forecasting on 3M+ time-series records (+12\% over baseline) and transformer-based
+    text classification. Comfortable from raw data to deployed FastAPI service.}
+  \providecommand{\projectorder}{\projHeart\projRAG\projLane}
+  \providecommand{\skillsblock}{\skCore\skData\skNLPshort\skDeploy}}
+
+\csdef{profile@research}{%
+  \providecommand{\targettitle}{Machine Learning Research Engineer}
+  \providecommand{\cvsummary}{MSc Data Science \& AI student at Universität des Saarlandes and student research assistant
+    at htw saar, working on evaluation-driven research and prototyping across NLP, computer vision and applied ML:
+    architecture benchmarks, baseline comparisons, failure-case analysis and reproducible demos. Hands-on with
+    PyTorch, Hugging Face Transformers, FAISS and FastAPI.}
+  \providecommand{\projectorder}{\projLane\projRAG\projHeart}
+  \providecommand{\skillsblock}{\skCore\skResearch\skNLPshort\skCVshort}}
+
+\csdef{profile@quant}{%
+  \providecommand{\targettitle}{Quantitative Researcher}
+  \providecommand{\cvsummary}{MSc Data Science \& AI student at Universität des Saarlandes with applied ML on financial
+    time series: engineered 10+ technical indicators from 3M+ OHLCV records across multiple exchanges, benchmarked
+    XGBoost, LSTM and GRU models (+12\% trend-prediction accuracy over baseline) and built a modular backtesting
+    framework that cut manual evaluation time by 40\%.}
+  \providecommand{\projectorder}{\projHeart\projRAG}
+  \providecommand{\skillsblock}{\skQuant\skCore\skPractice}}

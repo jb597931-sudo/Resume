@@ -1,0 +1,185 @@
+% ===========================================================================
+% cv-master.tex: the single source of truth for every CV version.
+%
+% Don't compile this file directly. Build through an application file or
+% build.sh (see README.md):
+%     ./build.sh genai                      -> default profile version
+%     ./build.sh applications/my-job.tex    -> tailored version
+%
+% Tagging content:
+%   \onlyfor{cv,research}{...}  shown only for those profiles
+%   \skipfor{quant}{...}        shown for every profile except those
+%   untagged content            shown in every version
+% Profiles: ml, genai, nlp, cv, ds, research, quant  (defined in profiles.tex)
+% ===========================================================================
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[a4paper,left=1.4cm,right=1.4cm,top=1.0cm,bottom=0.9cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage[hidelinks]{hyperref}
+
+% --- ATS hygiene ------------------------------------------------------------
+% Real Unicode text in the PDF, and no ligatures (some parsers read "fi"/"fl"
+% ligatures as missing characters, which breaks words like "fine-tuned").
+\input{glyphtounicode}
+\pdfgentounicode=1
+\DisableLigatures{encoding = *, family = *}
+\hypersetup{pdfcreator={}, pdfproducer={}}
+
+% --- Layout -----------------------------------------------------------------
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\vspace{-4pt}\rule{\textwidth}{0.5pt}]
+\titlespacing*{\section}{0pt}{4pt}{2pt}
+\setlist[itemize]{leftmargin=1.1em, itemsep=0pt, parsep=0pt, topsep=1pt, label=\textbullet}
+\newcommand{\sep}{\enspace\textbar\enspace}
+
+% Experience/education line: \job{Title}{Organisation}{Location}{Dates}
+\newcommand{\job}[4]{%
+  \par\vspace{2pt}\textbf{#1}, #2\ifstrempty{#3}{}{, #3}\hfill\textit{#4}\par}
+% Project line: \project{Name}{repo path under your GitHub}{tech stack}
+\newcommand{\project}[3]{%
+  \par\vspace{2pt}\textbf{#1}\enspace\href{https://\cvgithub/#2}{[GitHub]}%
+  \ifstrempty{#3}{}{\enspace\textit{#3}}\par}
+\newcommand{\skillrow}[2]{\textbf{#1:} #2\par}
+
+% --- Profile tagging ----------------------------------------------------------
+\newtoggle{cvshow}
+\newcommand{\onlyfor}[2]{%
+  \togglefalse{cvshow}%
+  \renewcommand*{\do}[1]{\ifcsdef{cvrole@##1}{\toggletrue{cvshow}}{}}%
+  \docsvlist{#1}%
+  \iftoggle{cvshow}{#2}{}}
+\newcommand{\skipfor}[2]{%
+  \toggletrue{cvshow}%
+  \renewcommand*{\do}[1]{\ifcsdef{cvrole@##1}{\togglefalse{cvshow}}{}}%
+  \docsvlist{#1}%
+  \iftoggle{cvshow}{#2}{}}
+
+% --- Load personal details, then the chosen profile ---------------------------
+\IfFileExists{personal.tex}{\input{personal}}{\input{personal.example}}
+\providecommand{\role}{ml}
+\providecommand{\jobskills}{}
+\csdef{cvrole@\role}{}
+\input{profiles}
+\ifcsdef{profile@\role}
+  {\csuse{profile@\role}}
+  {\PackageError{cv}{Unknown profile '\role'. Use: ml, genai, nlp, cv, ds, research, quant}{}}
+
+\ifdefempty{\cvlanguages}{\typeout{CV-TODO: \string\cvlanguages\space is empty in personal.tex}}{}
+\ifdefempty{\cvgraduation}{\typeout{CV-TODO: \string\cvgraduation\space is empty in personal.tex}}{}
+
+\hypersetup{pdftitle={\cvname\space - CV - \targettitle}, pdfauthor={\cvname}}
+
+% ===========================================================================
+%  PROJECT BANK: each profile chooses the order; \projectorder overrides it.
+% ===========================================================================
+\newcommand{\projRAG}{%
+  \project{CompanyDocs RAG Assistant}{CompanyDocs-RAG-Assistant-}{Python, Sentence-Transformers, FAISS, Gradio}
+  \begin{itemize}
+    \item Built a local RAG (retrieval-augmented generation) chatbot over 20 GitLab handbook pages, chunked into
+          206 segments (500 words, 80 overlap) and served via Gradio with source citations.
+    \onlyfor{ml,genai,nlp,research}{\item Implemented semantic retrieval with Sentence-Transformers (all-MiniLM-L6-v2, 384-d embeddings) and a
+          FAISS vector index (IndexFlatIP), returning the top-4 evidence passages with similarity scores.}
+    \item Evaluated on 35 questions (25 supported / 10 unsupported): top-4 accuracy 0.56 and unsupported-question
+          rejection 0.80; beat a keyword-search baseline by +20 pts (0.36 to 0.56) and cut retrieval latency 3.2$\times$.
+  \end{itemize}}
+
+\newcommand{\projLane}{%
+  \project{Lane Detection System}{Lane_Detection}{PyTorch, U-Net, Gradio}
+  \begin{itemize}
+    \item Built a real-time lane detection benchmark in PyTorch on 3,626 annotated TuSimple road images, comparing
+          U-Net, CLRNet-style, LaneATT-style and SCNN-style semantic segmentation models.
+    \onlyfor{cv}{\item Implemented the end-to-end pipeline: TuSimple annotation parsing, binary lane-mask generation, model
+          training, evaluation and visual prediction overlays.}
+    \item Best model, a lightweight U-Net: 0.389 IoU, 0.559 F1-score and 91.5 FPS inference, suitable for real-time
+          deployment.
+    \onlyfor{cv,research}{\item Compared architectures on IoU, F1-score, precision, recall, latency, FPS, parameter count and model size.}
+  \end{itemize}}
+
+\newcommand{\projHeart}{%
+  \project{Heart Disease Risk Prediction}{Heart-Disease-Prediction-}{Python, scikit-learn, XGBoost, SHAP}
+  \begin{itemize}
+    \item Built an end-to-end clinical risk prediction pipeline with stratified cross-validation, balanced preprocessing
+          and hyperparameter-tuned XGBoost, reaching 0.90 ROC-AUC; improved recall via threshold calibration.
+    \onlyfor{ds}{\item Applied SHAP for patient-level and global model interpretability, identifying key
+          risk factors (thal, oldpeak, ca).}
+  \end{itemize}}
+
+\begin{document}
+
+% ===========================================================================
+%  HEADER
+% ===========================================================================
+\begin{center}
+  {\LARGE\bfseries \cvname}\par\smallskip
+  {\large \targettitle\sep MSc Data Science \& AI}\par\smallskip
+  \small \cvlocation\sep \cvphone\sep \href{mailto:\cvemail}{\cvemail}\\
+  \href{https://\cvlinkedin}{\cvlinkedin}\sep \href{https://\cvgithub}{\cvgithub}
+\end{center}
+
+% ===========================================================================
+\section{Professional Summary}
+\cvsummary
+
+% ===========================================================================
+\section{Education}
+\job{Universität des Saarlandes}{MSc in Data Science and Artificial Intelligence}{}
+    {Oct 2024 \textendash{} \ifdefempty{\cvgraduation}{Present}{Expected \cvgraduation}}
+\job{Pune University, India}{BE in Information Technology}{}{Jun 2020 \textendash{} Jun 2024}
+
+% ===========================================================================
+\section{Experience}
+\job{Student Research Assistant (HiWi)}{FGVT, htw saar}{Germany}{Oct 2026 \textendash{} Present}
+\begin{itemize}
+  \item Developing a camera-based FDM 3D-print monitoring prototype with G-code/layer alignment, visual inspection
+        and alert-only defect-detection model inference.
+  \item Integrated OctoPrint virtual-printer mapping, Raspberry Pi camera capture and a browser-accessible
+        monitoring dashboard; tested the pipeline on simulated and real print data.
+  \onlyfor{cv}{\item Evaluated external defect datasets and documented failure cases and practical limitations, including
+        occlusion and model generalization.}
+\end{itemize}
+
+\job{NLP Intern}{LinguaTech Solutions}{}{Apr 2024 \textendash{} May 2025}
+\begin{itemize}
+  \item Fine-tuned BERT and RoBERTa transformer models for text classification and sentiment analysis, improving
+        F1-scores by up to 8\%.
+  \skipfor{quant}{\item Implemented a named entity recognition (NER) pipeline with spaCy and Hugging Face to extract entities from
+        50K+ unstructured documents.}
+  \skipfor{cv,quant}{\item Developed a semantic similarity system with Sentence Transformers, achieving 95\%+ top-1 match accuracy
+        on internal validation queries.}
+  \item Deployed ML models as FastAPI microservices with under 120 ms inference latency, integrated into internal tools.
+\end{itemize}
+
+\job{Machine Learning Intern}{Toward's Imagination Pvt. Ltd.}{India}{Jan 2023 \textendash{} Oct 2023}
+\begin{itemize}
+  \item Processed and engineered 3M+ OHLCV time-series records from multiple stock exchanges into training-ready
+        datasets.
+  \item Trained and benchmarked XGBoost, LSTM and GRU models, improving short-term trend prediction accuracy by
+        12\% over baseline.
+  \onlyfor{ds,quant}{\item Engineered 10+ technical indicator features (RSI, MACD, EMA) and evaluated their impact on model
+        performance.}
+  \onlyfor{ml,ds,quant}{\item Designed a modular backtesting framework to assess strategy robustness, reducing manual evaluation
+        time by 40\%.}
+\end{itemize}
+
+% ===========================================================================
+\section{Projects}
+\projectorder
+
+% ===========================================================================
+\section{Technical Skills}
+\skillsblock
+\skillrow{Tools}{FastAPI, Gradio, Git, Jupyter, Raspberry Pi, OctoPrint, VS Code, Cursor AI, Codex}
+\ifdefempty{\cvextraskills}
+  {\ifdefempty{\jobskills}{}{\skillrow{Additional}{\jobskills}}}
+  {\ifdefempty{\jobskills}{\skillrow{Additional}{\cvextraskills}}{\skillrow{Additional}{\cvextraskills, \jobskills}}}
+\ifdefempty{\cvlanguages}{}{\skillrow{Languages}{\cvlanguages}}
+
+\end{document}

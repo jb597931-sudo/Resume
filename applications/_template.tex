@@ -1,0 +1,31 @@
+% ===========================================================================
+% APPLICATION TEMPLATE
+% 1. Copy:  cp applications/_template.tex applications/2026-12-company-role.tex
+% 2. Edit the lines below (2 required, the rest optional)
+% 3. Build: ./build.sh applications/2026-12-company-role.tex
+%    Output: output/<Your_Name>_CV_2026-12-company-role.pdf
+% ===========================================================================
+
+% REQUIRED: closest profile: ml | genai | nlp | cv | ds | research | quant
+\def\role{ml}
+
+% REQUIRED: the job title exactly as the posting writes it (strongest ATS signal)
+\def\targettitle{Machine Learning Engineer (Working Student)}
+
+% OPTIONAL: keywords from the posting that you GENUINELY have but the CV
+% doesn't mention yet. Printed in an "Additional" skills row for this
+% application only.
+% \def\jobskills{Docker, MLflow}
+
+% OPTIONAL: rewrite the summary using the posting's own words.
+% \def\cvsummary{...}
+
+% OPTIONAL: reorder or drop projects (\projRAG, \projLane, \projHeart)
+% \def\projectorder{\projLane\projRAG}
+
+% OPTIONAL: reorder or replace skill rows (see profiles.tex for the building
+% blocks \skCore \skLLM \skNLPshort \skNLPmin \skCV \skCVshort \skDL
+% \skPractice \skData \skDeploy \skQuant \skResearch)
+% \def\skillsblock{\skCV\skCore\skDeploy}
+
+\input{cv-master}

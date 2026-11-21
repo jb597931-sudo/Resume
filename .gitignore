@@ -1,0 +1,7 @@
+# Contact details stay on your machine (this repo is public)
+personal.tex
+# Build output (PDFs contain your contact details)
+output/
+*.aux
+*.log
+*.out

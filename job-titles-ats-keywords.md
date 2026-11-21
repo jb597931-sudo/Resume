@@ -26,7 +26,7 @@ Recruiter review of `Rohit_Ahire_CV.pdf` (Nov 2026). It covers the 20 job titles
    - **Computer Vision:** CNNs, U-Net, image segmentation, OpenCV *(if true)*, SCNN, LaneATT, CLRNet
    - **Deployment / Tools:** FastAPI, Gradio, Docker *(if true)*, Git, Linux *(if true)*, Raspberry Pi, OctoPrint, Jupyter
    - **Data:** pandas, NumPy *(almost certainly true, so add them)*, time-series analysis, feature engineering
-4. **No location and no languages.** Recruiters in Germany filter on both. Add `Saarbrücken, Germany` to the header, plus a line like `Languages: English (C1), German (B1)` with your real levels. Write the phone number as `+49 155 10482913`.
+4. **No location and no languages.** Recruiters in Germany filter on both. Add `Saarbrücken, Germany` to the header, plus a line like `Languages: English (C1), German (B1)` with your real levels. Write the phone number in international format (`+49 ...`).
 5. **No expected graduation date.** Write `Oct 2024 – Expected <Mon YYYY>`. Werkstudent, thesis and graduate postings screen on it.
 6. **The summary should name the job titles.** For example: *"MSc Data Science & AI student and Machine Learning Engineer with experience in NLP, LLMs/RAG and computer vision..."*. The title match is one of the strongest ATS signals.
 7. Check the spelling of "Toward's Imagination". If the company is "Towards Imagination", the apostrophe is wrong.
