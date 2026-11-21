@@ -9,7 +9,7 @@ You can add postings in either of two ways, or both:
 - **One file per posting** in `jobs/postings/`. Copy `_TEMPLATE.txt` to a new name, fill in the header lines, and paste the **full** job description under the `---` line. From LinkedIn or Indeed: open the posting, click "show more", select all of the description text, copy and paste.
 - **Many postings at once** in `jobs/postings.csv`, with the columns `title,company,location,url,source,posted,description`. Use this for exports from a job-board API or a spreadsheet you've collected.
 
-Duplicates are dropped by URL, or by title plus company when there's no URL.
+Duplicates are dropped by URL, or by title plus company when there's no URL. Your postings (`postings.csv` and the files in `postings/`) are gitignored, because this repo is public.
 
 ## 2. Run
 
@@ -28,6 +28,8 @@ It writes:
 **Score = 100 × (0.6 × Skills Match + 0.2 × Title Fit + 0.2 × Level Fit).** You can change the weights on the tracker's Settings sheet.
 
 - **Skills Match:** the share of the posting's recognised skills (about 100 terms, in English and German) that your CV shows. Skills that only appear under "nice to have" count half. Your CV skills are read from `cv-master.tex`, `profiles.tex` and `\cvextraskills` in `personal.tex`, so the score follows your CV as it changes.
+  - **Short postings are blended with a family average.** When a posting names only a few skills, the score is pulled toward that job family's overall fit with your CV: GenAI/NLP/CV 0.8, ML/research 0.75, DS 0.7, quant 0.5. That keeps a two-line excerpt from scoring 0% or 100%. With a full description, the posting's own skills dominate.
+  - **Implied skills count.** For example, RAG or LLM experience counts as "Generative AI".
 - **Title Fit:**
   - 1 = the title matches one of your 20 target titles.
   - 0.5 = matched through skills only.

@@ -89,7 +89,8 @@ SKILLS: dict[str, str] = {
     "Information retrieval": r"information retrieval|search relevance|ranking",
     "Prompt engineering": r"prompt(?:ing| engineering)",
     "AI agents": r"ai agents?|agentic|multi-agent",
-    "Fine-tuning": r"fine[- ]?tun(?:e|ing|ed)|lora|peft",
+    "Fine-tuning": r"fine[- ]?tun(?:e|ing|ed)",
+    "LoRA / PEFT": r"lora|qlora|peft",
     "Transformers": r"transformers?(?: models?| architectures?)?",
     "BERT": r"bert|roberta",
     "LLaMA": r"llama(?! ?index)",
@@ -117,7 +118,8 @@ SKILLS: dict[str, str] = {
     "Hyperparameter tuning": r"hyperparameter",
     "Explainability (SHAP)": r"shap|explainab\w*|interpretab\w*|xai",
     "Backtesting": r"backtest(?:ing)?",
-    "Quant finance": r"quantitative finance|trading|technical indicators|ohlcv",
+    "Quant finance": r"quantitative finance|technical indicators|ohlcv",
+    "Trading": r"trading|algorithmic trading",
     # engineering & deployment
     "Model deployment": r"model deployment|deploy(?:ing|ment)? (?:ml |machine learning )?models?|model serving|inference",
     "REST APIs": r"rest(?:ful)? apis?|apis?",
@@ -136,13 +138,14 @@ SKILLS: dict[str, str] = {
     "Databricks": r"databricks",
     "Tableau/Power BI": r"tableau|power ?bi",
     "ONNX/TensorRT": r"onnx|tensorrt|openvino|tflite|tensorflow lite",
-    "Edge AI / embedded": r"edge (?:ai|devices?|computing)|embedded|jetson|raspberry pi",
+    "Edge AI": r"edge (?:ai|devices?|computing|systems?)|jetson|raspberry pi",
+    "Embedded systems": r"embedded(?: systems?| systeme| software)?|microcontrollers?|stm32|firmware",
     "ROS": r"ros2?",
     "LiDAR / sensor fusion": r"lidar|sensor fusion|radar",
     "ADAS / autonomous driving": r"adas|autonomous driving|autonomes fahren|self-driving",
     "Research / publications": r"publications?|research experience|peer-reviewed",
 }
-COMPILED = {k: re.compile(rf"(?<![\w+#]){v}(?![\w+#])", re.I) for k, v in SKILLS.items()}
+COMPILED = {k: re.compile(rf"(?<![\w+#])(?:{v})(?![\w+#])", re.I) for k, v in SKILLS.items()}
 
 # Which projects to put first, by overlap with the posting's skills.
 PROJECT_SKILLS = {
@@ -150,7 +153,7 @@ PROJECT_SKILLS = {
                    "Generative AI", "NLP", "Sentence Transformers", "Vector database", "Gradio/Streamlit",
                    "Prompt engineering", "AI agents"},
     r"\projLane": {"Computer Vision", "Segmentation", "CNNs", "Object detection", "ADAS / autonomous driving",
-                    "PyTorch", "Deep Learning", "Image classification", "OpenCV", "Edge AI / embedded"},
+                    "PyTorch", "Deep Learning", "Image classification", "OpenCV", "Edge AI"},
     r"\projHeart": {"XGBoost", "scikit-learn", "Explainability (SHAP)", "Cross-validation",
                      "Hyperparameter tuning", "Statistics", "Feature engineering", "Machine Learning"},
 }
@@ -165,14 +168,29 @@ PROFILE_PROJECTS = {
     "quant": [r"\projHeart", r"\projRAG"],
 }
 
+# Skills the CV implies even when the exact word isn't there.
+IMPLIED = {
+    "Generative AI": {"RAG", "LLMs"},
+    "Information retrieval": {"Semantic search", "FAISS"},
+    "Deep Learning": {"PyTorch", "CNNs", "Transformers"},
+    "Machine Learning": {"scikit-learn", "XGBoost", "PyTorch"},
+}
+
+# How well each job family fits the CV overall (Strong/Good/Stretch ratings in
+# job-titles-ats-keywords.md). Used as a prior so that a posting with only a
+# few recognisable skills isn't scored 0% or 100% on thin evidence.
+FAMILY_PRIOR = {"genai": 0.8, "nlp": 0.8, "cv": 0.8, "ml": 0.75, "research": 0.75, "ds": 0.7, "quant": 0.5}
+PRIOR_STRENGTH = 3.0  # acts like 3 extra skill mentions at the family's fit rate
+
 # Title -> profile, checked in order. Covers the 20 titles in job-titles-ats-keywords.md.
 TITLE_RULES = [
     ("quant", r"quant|trading|algorithmic"),
-    ("cv", r"computer vision|vision|perception|adas|autonom|image|bildverarbeitung|inspection|robot|edge ai|embedded"),
+    ("cv", r"computer vision|vision|visual|perception|adas|autonom|image|bildverarbeitung|inspection|inspektion|prüf|"
+           r"robot|edge ai|embedded"),
     ("nlp", r"\bnlp\b|natural language|computational ling|text analytics|sprach"),
-    ("genai", r"gen ?ai|generative|\bllm|\brag\b|chatbot|conversational|search|retrieval|\bagent|\bai engineer|\bki[- ]|"
-              r"artificial intelligence|künstliche intelligenz"),
     ("research", r"research|thesis|abschlussarbeit|masterarbeit|hiwi|hilfskraft|applied scientist|wissenschaftlich"),
+    ("genai", r"gen ?ai|generative|\bllm|\brag\b|chatbot|conversational|\bsearch\b|retrieval|\bagent|\bai engineer|"
+              r"\bki[- ]|artificial intelligence|künstliche intelligenz"),
     ("ds", r"data scien|forecast|analytics|data analyst"),
     ("ml", r"machine learning|\bml\b|mlops|deep learning|\bai\b|\bki\b"),
 ]
@@ -182,7 +200,8 @@ SENIOR = re.compile(r"\b(?:senior|sr\.?|lead|principal|staff|head of|director|ma
 YEARS = re.compile(r"(\d{1,2})\s*\+?\s*(?:-\s*\d+\s*)?(?:years?|yrs|jahre)", re.I)
 GERMAN_REQ = re.compile(
     r"fließend(?:e|es)? deutsch|sehr gute(?:n)? deutsch|verhandlungssicher(?:e|es)? deutsch|deutsch\w* (?:auf )?(?:c1|c2|muttersprach)|"
-    r"(?:fluent|business[- ]fluent|excellent|very good|native)\w*(?: command of| in)? german|german \(?(?:c1|c2|native|fluent)",
+    r"(?:fluent|business[- ]fluent|excellent|very good|native)\w*(?: command of| in)? german|german \(?(?:c1|c2|native|fluent)|"
+    r"english and german (?:are |is )?required|german (?:is |are )?required|deutsch und englisch|deutschkenntnisse erforderlich",
     re.I)
 GERMAN_WORDS = re.compile(r"\b(?:und|wir|sie|für|mit|ihre?|der|die|das|bei|unser(?:e|em)?|kenntnisse)\b", re.I)
 NICE_TO_HAVE = re.compile(r"nice[- ]to[- ]have|bonus|plus\b|von vorteil|wünschenswert|optional|preferred|ideally|idealerweise", re.I)
@@ -199,6 +218,7 @@ class Posting:
     posted: str = ""
     description: str = ""
     file: str = ""
+    notes: str = ""
     # results
     profile: str = ""
     skills_pct: float = 0.0
@@ -348,7 +368,7 @@ def load_postings(postings_dir: Path = POSTINGS_DIR, postings_csv: Path = POSTIN
                 postings.append(Posting(title=row["title"], company=row.get("company", ""),
                                         location=row.get("location", ""), url=row.get("url", ""),
                                         source=row.get("source", ""), posted=row.get("posted", ""),
-                                        description=row.get("description", ""),
+                                        description=row.get("description", ""), notes=row.get("notes", ""),
                                         file=f"{postings_csv.name}:{i}"))
     # de-duplicate on url, else on title+company
     seen, unique = set(), []
@@ -365,10 +385,11 @@ def score(p: Posting, cv: str, cv_skills: dict[str, str]) -> None:
     weights = weighted_skills(jd)
     total = sum(weights.values())
     have = {k: w for k, w in weights.items() if k in cv_skills}
-    p.skills_pct = round(sum(have.values()) / total, 3) if total else 0.0
+    p.profile, p.title_fit = pick_profile(p.title, weights)
+    prior = FAMILY_PRIOR[p.profile]
+    p.skills_pct = round((sum(have.values()) + PRIOR_STRENGTH * prior) / (total + PRIOR_STRENGTH), 3)
     p.matched = sorted(have, key=lambda k: -weights[k])
     p.missing = sorted((k for k in weights if k not in cv_skills), key=lambda k: -weights[k])
-    p.profile, p.title_fit = pick_profile(p.title, weights)
     p.level_fit = level_fit(p.title, p.description)
     if GERMAN_REQ.search(jd):
         p.german = "Required"
@@ -388,7 +409,7 @@ def write_application(p: Posting, cv: str, include_jobskills: bool = True) -> Pa
     for k in p.matched:
         surface = jd_found.get(k)
         if surface and surface.lower() not in cv.lower():
-            respell.append(surface if not surface.islower() else surface.title() if len(surface) > 4 else surface.upper())
+            respell.append(surface.upper() if surface.islower() and len(surface) <= 4 else surface[0].upper() + surface[1:])
     respell = list(dict.fromkeys(respell))[:8]
     projects = sorted(PROFILE_PROJECTS[p.profile],
                       key=lambda pr: -len(PROJECT_SKILLS[pr] & set(p.matched)))
@@ -449,7 +470,7 @@ def write_workbook(postings: list[Posting], path: Path) -> None:
     # --- Settings ----------------------------------------------------------
     st["A1"] = "Match score weights (edit the yellow cells; Jobs!Score recalculates)"
     st["A1"].font = Font(name=font, bold=True, size=12)
-    rows = [("Skills match weight", 0.6, "Share of the posting's recognised skills found in your CV (nice-to-haves count half)."),
+    rows = [("Skills match weight", 0.6, "Share of the posting's recognised skills found in your CV (nice-to-haves count half), blended with the job family's overall fit when the text names only a few skills."),
             ("Title fit weight", 0.2, "1 = title matches one of your 20 target titles; 0.5 = matched via skills; 0 = no match."),
             ("Level fit weight", 0.2, "1 = Werkstudent/intern/thesis/junior; 0.7 = unstated; 0.3 = 3+ years required; 0.1 = senior/lead.")]
     for i, (label, val, note) in enumerate(rows, start=3):
@@ -498,7 +519,7 @@ def write_workbook(postings: list[Posting], path: Path) -> None:
             11: "Open" if p.url else "", 12: p.profile,
             13: ", ".join(p.matched), 14: ", ".join(p.missing), 15: p.german, 16: p.confidence,
             17: Path(p.cv_pdf).name if p.cv_pdf else "", 18: p.cv_note,
-            19: "To review", 22: p.file,
+            19: "To review", 21: p.notes, 22: p.file,
         }
         for col in range(1, len(headers) + 1):
             c = ws.cell(r, col, vals.get(col))
@@ -523,9 +544,9 @@ def write_workbook(postings: list[Posting], path: Path) -> None:
                             allow_blank=True)
         ws.add_data_validation(dv)
         dv.add(f"S2:S{last}")
-        ws.conditional_formatting.add(f"B2:B{last}", ColorScaleRule(start_type="num", start_value=30, start_color="F8696B",
-                                                                    mid_type="num", mid_value=55, mid_color="FFEB84",
-                                                                    end_type="num", end_value=80, end_color="63BE7B"))
+        ws.conditional_formatting.add(f"B2:B{last}", ColorScaleRule(start_type="min", start_color="F8696B",
+                                                                    mid_type="percentile", mid_value=50, mid_color="FFEB84",
+                                                                    end_type="max", end_color="63BE7B"))
         ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}{last}"
     ws.freeze_panes = "G2"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -546,6 +567,9 @@ def main() -> int:
         return 1
     cv = cv_text()
     cv_skills = find_skills(cv)
+    for skill, sources in IMPLIED.items():
+        if skill not in cv_skills and sources & cv_skills.keys():
+            cv_skills[skill] = skill
     for p in postings:
         score(p, cv, cv_skills)
     postings.sort(key=lambda p: -p.score)

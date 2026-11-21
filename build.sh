@@ -21,6 +21,7 @@ build() { # $1 = output name, $2 = TeX to run
   local status="ok"
   [ "${pages:-1}" -gt 1 ] && status="WARNING: $pages pages, trim bullets to fit one page"
   echo "output/$out.pdf  ($status)"
+  last_log="$log"
   rm -f "output/$out.aux" "output/$out.out"
 }
 
@@ -37,5 +38,4 @@ case "${1:-}" in
 esac
 
 # One reminder for unfinished personal details
-log=$(ls -t output/*.log | head -1)
-grep -h '^CV-TODO' "$log" 2>/dev/null | sed 's/^CV-TODO: /reminder: /' || true
+grep -h '^CV-TODO' "$last_log" 2>/dev/null | sed 's/^CV-TODO: /reminder: /' || true
