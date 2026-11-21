@@ -1,0 +1,73 @@
+% ===========================================================================
+% cover-letter.tex: shared cover letter layout. Same header, fonts and ATS
+% settings as the CV, and contact details from personal.tex.
+%
+% Don't compile directly. Each letter lives in letters/<name>.tex, which sets
+% the macros below and then does \input{cover-letter}:
+%   \lcompany   company name            \llocation  company location
+%   \lposition  job title (as posted)   \lgreeting  e.g. Dear Generali team,
+%   \lbody      the letter paragraphs (blank lines between paragraphs)
+% Build: ./build.sh letters/<name>.tex   or   ./build.sh letters
+% ===========================================================================
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[a4paper,left=2.2cm,right=2.2cm,top=1.6cm,bottom=1.6cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{etoolbox}
+\usepackage[hidelinks]{hyperref}
+
+\input{glyphtounicode}
+\pdfgentounicode=1
+\DisableLigatures{encoding = *, family = *}
+\hypersetup{pdfcreator={}, pdfproducer={}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.75em}
+\newcommand{\sep}{\enspace\textbar\enspace}
+% Date as "21 November 2026" (the usual form in German business letters)
+\newcommand{\letterdate}{\number\day\ \ifcase\month\or January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or December\fi\ \number\year}
+
+\IfFileExists{personal.tex}{\input{personal}}{\input{personal.example}}
+\providecommand{\cvavailability}{}
+\providecommand{\llocation}{}
+\providecommand{\lgreeting}{Dear Hiring Team,}
+% One sentence on availability, printed only when personal.tex sets it.
+\newcommand{\availability}{\ifdefempty{\cvavailability}{}{I am available \cvavailability. }}
+\ifdefempty{\cvavailability}{\typeout{CV-TODO: \string\cvavailability\space is empty in personal.tex}}{}
+\hypersetup{pdftitle={\cvname\space - Cover Letter - \lposition}, pdfauthor={\cvname}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries \cvname}\par\smallskip
+  \small \cvlocation\sep \cvphone\sep \href{mailto:\cvemail}{\cvemail}\\
+  \href{https://\cvlinkedin}{\cvlinkedin}\sep \href{https://\cvgithub}{\cvgithub}
+\end{center}
+\vspace{0.8em}
+
+\begin{minipage}[t]{0.5\textwidth}
+  \lcompany\ifdefempty{\llocation}{}{\\\llocation}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\raggedleft
+  \cvlocation, \letterdate
+\end{minipage}
+
+\vspace{1.2em}
+\textbf{Application: \lposition}
+
+\lgreeting
+
+\lbody
+
+Kind regards,\par\vspace{0.2em}
+\cvname
+
+\vspace{0.6em}
+{\small Enclosure: CV}
+
+\end{document}

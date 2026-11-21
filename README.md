@@ -53,6 +53,10 @@ cp applications/_template.tex applications/2026-12-bosch-perception.tex
 
 Add postings to `jobs/postings/`, then run `python3 tools/match_jobs.py`. You get `output/job-matches.xlsx`, ranked by match score, plus a tailored PDF for every posting. See [`jobs/README.md`](jobs/README.md).
 
+## Cover letters
+
+`cover-letter.tex` gives every letter the same header and fonts as your CV, and takes contact details from `personal.tex`. Each letter is a small file in `letters/`: copy `letters/_TEMPLATE.tex`, ideally using the same name as the application file so the two PDFs pair up, then fill in the company, the position and the body. Build them with `./build.sh letters`. Set `\cvavailability` in `personal.tex` (for example "from January 2027 for up to 20 hours per week") and every letter gets one availability sentence. Your letters are gitignored.
+
 ## Editing content
 
 - **New bullet in every version:** add a plain `\item ...` in `cv-master.tex`.

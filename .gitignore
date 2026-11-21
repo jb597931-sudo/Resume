@@ -12,3 +12,6 @@ __pycache__/
 jobs/postings.csv
 jobs/postings/*
 !jobs/postings/_TEMPLATE.txt
+# Your cover letters (private: name the companies you apply to)
+letters/*
+!letters/_TEMPLATE.tex

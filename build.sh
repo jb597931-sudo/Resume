@@ -3,6 +3,8 @@
 #   ./build.sh genai                     default version for one profile
 #   ./build.sh all                       default version for every profile
 #   ./build.sh applications/acme-ml.tex  tailored version for one application
+#   ./build.sh letters/acme-ml.tex       one cover letter
+#   ./build.sh letters                   every cover letter in letters/
 set -euo pipefail
 cd "$(dirname "$0")"
 mkdir -p output
@@ -30,11 +32,19 @@ case "${1:-}" in
     for p in $PROFILES; do build "${name}_CV_${p}" "\def\role{$p}\input{cv-master}"; done ;;
   ml|genai|nlp|cv|ds|research|quant)
     build "${name}_CV_$1" "\def\role{$1}\input{cv-master}" ;;
+  letters)
+    for f in letters/*.tex; do
+      case "$(basename "$f")" in _*) continue ;; esac
+      build "${name}_Cover_Letter_$(basename "$f" .tex)" "\input{$f}"
+    done ;;
+  letters/*.tex)
+    [ -f "$1" ] || { echo "No such file: $1"; exit 1; }
+    build "${name}_Cover_Letter_$(basename "$1" .tex)" "\input{$1}" ;;
   *.tex)
     [ -f "$1" ] || { echo "No such file: $1"; exit 1; }
     build "${name}_CV_$(basename "$1" .tex)" "\input{$1}" ;;
   *)
-    echo "usage: ./build.sh <all | $PROFILES | applications/<file>.tex>"; exit 1 ;;
+    echo "usage: ./build.sh <all | $PROFILES | applications/<file>.tex | letters | letters/<file>.tex>"; exit 1 ;;
 esac
 
 # One reminder for unfinished personal details
