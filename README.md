@@ -49,6 +49,10 @@ cp applications/_template.tex applications/2026-12-bosch-perception.tex
 3. **Optional:** add posting keywords you really have to `\jobskills`, rewrite `\cvsummary` in the posting's own words, or reorder projects with `\projectorder`.
 4. **Before sending,** go through the posting's must-have list. Every term you can honestly claim should appear in the PDF *spelled the way the posting spells it* ("scikit-learn" vs "sklearn", "LLMs" vs "large language models").
 
+## Score many postings and build a CV for each
+
+Add postings to `jobs/postings/`, then run `python3 tools/match_jobs.py`. You get `output/job-matches.xlsx`, ranked by match score, plus a tailored PDF for every posting. See [`jobs/README.md`](jobs/README.md).
+
 ## Editing content
 
 - **New bullet in every version:** add a plain `\item ...` in `cv-master.tex`.

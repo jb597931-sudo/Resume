@@ -5,3 +5,5 @@ output/
 *.aux
 *.log
 *.out
+# Generated per-posting application files (rebuilt by tools/match_jobs.py)
+applications/auto/

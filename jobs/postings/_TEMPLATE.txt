@@ -1,0 +1,11 @@
+title: Werkstudent (m/w/d) Machine Learning Engineering
+company: Company name
+location: Saarbrücken (hybrid)
+url: https://www.linkedin.com/jobs/view/0000000000
+source: LinkedIn
+posted: 2026-11-20
+---
+Paste the WHOLE job description below this line: tasks, requirements,
+nice-to-haves, language requirements. The more complete it is, the better
+the match score. (Files starting with _ are ignored, so copy this file to a
+new name, e.g. 2026-11-company-role.txt.)
